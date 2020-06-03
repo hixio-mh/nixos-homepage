@@ -1,7 +1,10 @@
 name: "Hourly Build & Deploy to Netlify"
 on:
-  schedule:
-  - cron: '0 * * * *'
+  push:
+    branches:
+      - report-hourly-failures
+  #schedule:
+  #- cron: '0 * * * *'
 jobs:
   hourly-build-and-deploy:
     runs-on: ubuntu-latest
@@ -27,21 +30,21 @@ jobs:
         nix build
         mkdir build
         cp -RL ./result/* ./build/
-    - name: Deploy to Netlify
-      uses: nwtgck/actions-netlify@v1.0.5
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      with:
-        publish-dir: './build'
-        production-branch: 'master'
-        deploy-message: 'Deploy from GitHub Actions'
-      if: github.repository == 'NixOS/nixos-homepage'
+    #- name: Deploy to Netlify
+    #  uses: nwtgck/actions-netlify@v1.0.5
+    #  env:
+    #    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    #    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+    #  with:
+    #    publish-dir: './build'
+    #    production-branch: 'master'
+    #    deploy-message: 'Deploy from GitHub Actions'
+    #  if: github.repository == 'NixOS/nixos-homepage'
     - name: Commit flake.lock, blogs.xml and push to master branch
       uses: stefanzweifel/git-auto-commit-action@v4.2.0
       with:
         commit_message: 'Update flake.lock and blogs.xml [ci skip]'
-        branch: 'master'
+        branch: 'report-hourly-failures'
         file_pattern: flake.lock blogs.xml
         commit_user_name: NixOS webmaster
         commit_user_email: webmaster@nixos.org
